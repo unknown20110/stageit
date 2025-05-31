@@ -210,22 +210,6 @@
             opacity: 0.7;
         }
 
-        .score {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
         .actions {
             display: flex;
             gap: 10px;
@@ -570,36 +554,6 @@
             link.click();
         }
 
-        // מיפוי אזורים לפי ערים
-        function getRegionByCity(city) {
-            if (!city) return '';
-            
-            const cityLower = city.toLowerCase();
-            
-            // צפון
-            const northCities = ['חיפה', 'נהריה', 'עכו', 'נצרת', 'טבריה', 'צפת', 'קריית שמונה', 'מעלות', 'כרמיאל', 'גליל', 'גולן', 'קרית אתא', 'קריית ביאליק', 'קריית ים', 'קריית מוצקין'];
-            
-            // מרכז
-            const centerCities = ['תל אביב', 'ירושלים', 'פתח תקווה', 'רמת גן', 'בני ברק', 'חולון', 'בת ים', 'הרצליה', 'כפר סבא', 'רעננה', 'נתניה', 'מודיעין', 'רמלה', 'לוד', 'ראשון לציון', 'רחובות', 'קרית גת'];
-            
-            // דרום
-            const southCities = ['באר שבע', 'אשדוד', 'אשקלון', 'אילת', 'דימונה', 'נתיבות', 'אופקים', 'ערד', 'מצפה רמון', 'יהוד'];
-            
-            for (let northCity of northCities) {
-                if (cityLower.includes(northCity.toLowerCase())) return 'צפון';
-            }
-            
-            for (let centerCity of centerCities) {
-                if (cityLower.includes(centerCity.toLowerCase())) return 'מרכז';
-            }
-            
-            for (let southCity of southCities) {
-                if (cityLower.includes(southCity.toLowerCase())) return 'דרום';
-            }
-            
-            return 'לא מוגדר';
-        }
-
         // דמה נתונים ראשוניים
         const sampleData = `שם המקום,איש קשר,טלפון,אימייל,סוג מקום,עיר,הערות
 יקב תל שיפון,,073-3859382,ortal.estatewinery@gmail.com,מבשלה / יקב,אורטל,
@@ -648,7 +602,7 @@
                         type: values[4] || '',
                         city: values[5] || '',
                         notes: values[6] || '',
-                        region: getRegionByCity(values[5] || ''),
+                        region: values[7] || '',
                         status: 'pending',
                         lastContact: null,
                         nextFollowUp: null
