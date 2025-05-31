@@ -416,8 +416,6 @@
   <button onclick="setViewMode('grid')" class="btn btn-secondary" id="gridBtn">🔲 Grid</button>
   <button onclick="setViewMode('list')" class="btn btn-secondary" id="listBtn">📋 List</button>
 </div>
-            <button onclick="sortByScore()" class="btn btn-secondary">📊 מיין לפי ניקוד</button>
-            <button onclick="generateCampaign()" class="btn btn-primary">🚀 צור קמפיין</button>
         </div>
 
         <div id="venuesContainer">
@@ -561,13 +559,8 @@
                 return;
             }
             
-            const headers = ['שם המקום', 'איש קשר', 'טלפון', 'אימייל', 'סוג מקום', 'עיר', 'אזור', 'הערות', 'סטטוס', 'ניקוד', 'קשר אחרון', 'מעקב הבא'];
             const csvContent = [
                 headers.join(','),
-                ...venues.map(v => [
-                    v.name, v.contact, v.phone, v.email, v.type, v.city, v.region, 
-                    v.notes, v.status, v.score, v.lastContact || '', v.nextFollowUp || ''
-                ].join(','))
             ].join('\n');
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -657,7 +650,6 @@
                         notes: values[6] || '',
                         region: getRegionByCity(values[5] || ''),
                         status: 'pending',
-                        score: calculateScore(values),
                         lastContact: null,
                         nextFollowUp: null
                     };
@@ -669,31 +661,6 @@
             updateFilters();
             renderVenues();
             updateStats();
-        }
-
-        function calculateScore(venueData) {
-            let score = 50; // ניקוד בסיס
-            
-            // יש אימייל = +20
-            if (venueData[3] && venueData[3].includes('@')) score += 20;
-            
-            // יש איש קשר = +15
-            if (venueData[1] && venueData[1].trim()) score += 15;
-            
-            // יש טלפון = +10
-            if (venueData[2] && venueData[2].trim()) score += 10;
-            
-            // סוג מקום (בר/מסעדה מקבלים ניקוד גבוה יותר)
-            const type = venueData[4] ? venueData[4].toLowerCase() : '';
-            if (type.includes('בר') || type.includes('מסעדה')) score += 15;
-            if (type.includes('בית קפה')) score += 10;
-            if (type.includes('מלון')) score += 12;
-            
-            // עיר גדולה = ניקוד גבוה יותר
-            const city = venueData[5] ? venueData[5].toLowerCase() : '';
-            if (city.includes('תל אביב') || city.includes('ירושלים') || city.includes('חיפה')) score += 10;
-            
-            return Math.min(100, score);
         }
 
 function renderVenues() {
@@ -713,7 +680,6 @@ function renderVenues() {
 
 if (viewMode === 'grid') {
   venueCard.innerHTML = `
-    <div class="score">${venue.score}</div>
     <div class="venue-name">${venue.name}</div>
     ${getConversationIcon(venue.id)}
     <div class="venue-info">
@@ -755,7 +721,6 @@ if (viewMode === 'grid') {
           <div class="info-row">${venue.type || ''} • ${venue.city || ''}</div>
         </div>
         <div>
-          <div class="score" style="margin: auto;">${venue.score}</div>
         </div>
       `;
     }
@@ -919,27 +884,6 @@ ${userSettings.phone}`
             renderVenues();
         }
 
-        function sortByScore() {
-            filteredVenues.sort((a, b) => b.score - a.score);
-            renderVenues();
-        }
-
-        function generateCampaign() {
-            const highScoreVenues = venues.filter(v => v.status === 'pending' && v.score >= 70);
-            if (highScoreVenues.length === 0) {
-                alert('אין מקומות עם ניקוד גבוה שממתינים לפנייה');
-                return;
-            }
-
-            const campaignText = `🎯 קמפיין מומלץ - ${highScoreVenues.length} מקומות עם פוטנציאל גבוה:
-
-${highScoreVenues.map(v => `📍 ${v.name} (${v.city}) - ניקוד: ${v.score}`).join('\n')}
-
-💡 המלצה: התחל מהמקומות עם הניקוד הגבוה ביותר`;
-
-            alert(campaignText);
-        }
-
         function openAiAssistant() {
             const suggestions = [
                 "🎯 המקומות עם הפוטנציאל הגבוה ביותר השבוע",
@@ -1068,15 +1012,6 @@ function addManualVenue() {
     notes: document.getElementById('manualNotes').value.trim(),
     region: getRegionByCity(document.getElementById('manualCity').value.trim()),
     status: 'pending',
-    score: calculateScore([
-      name,
-      document.getElementById('manualContact').value.trim(),
-      document.getElementById('manualPhone').value.trim(),
-      document.getElementById('manualEmail').value.trim(),
-      document.getElementById('manualType').value,
-      document.getElementById('manualCity').value.trim(),
-      document.getElementById('manualNotes').value.trim()
-    ]),
     lastContact: null,
     nextFollowUp: null
   };
