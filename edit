@@ -390,7 +390,7 @@
                 <option value="confirmed">בתהליך</option>
                 <option value="closed">נסגר</option>
             </select>
-            <select id="regionFilter" class="filter-input">
+            <select id="manualRegion" class="filter-input">
                 <option value="">כל האזורים</option>
                 <option value="צפון">צפון</option>
                 <option value="מרכז">מרכז</option>
@@ -428,35 +428,42 @@
             <div id="messageContent"></div>
         </div>
     </div>
-<!-- Modal הוספת מקום ידנית -->
-<div id="addVenueModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeAddVenueModal()">&times;</span>
-    <h2>➕ הוסף מקום חדש</h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-      <input type="text" id="manualName" placeholder="שם המקום *" style="padding:10px;border-radius:10px;border:1px solid #ccc">
-      <input type="text" id="manualContact" placeholder="איש קשר" style="padding:10px;border-radius:10px;border:1px solid #ccc">
-      <input type="text" id="manualPhone" placeholder="טלפון" style="padding:10px;border-radius:10px;border:1px solid #ccc">
-      <input type="email" id="manualEmail" placeholder="אימייל" style="padding:10px;border-radius:10px;border:1px solid #ccc">
-      <select id="manualType" style="padding:10px;border-radius:10px;border:1px solid #ccc">
-        <option value="">בחר סוג מקום</option>
-        <option>בר</option>
-        <option>מסעדה</option>
-        <option>בית קפה</option>
-        <option>מלון</option>
-        <option>אולם</option>
-        <option>יקב</option>
-        <option>גלריה</option>
-        <option>אחר</option>
-      </select>
-      <input type="text" id="manualCity" placeholder="עיר" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+
+  <!-- הוספת מקום ידנית כולל אזור -->
+  <div id="addVenueModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeAddVenueModal()">&times;</span>
+      <h2>➕ הוסף מקום חדש</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+        <input type="text" id="manualName" placeholder="שם המקום *" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+        <input type="text" id="manualContact" placeholder="איש קשר" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+        <input type="text" id="manualPhone" placeholder="טלפון" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+        <input type="email" id="manualEmail" placeholder="אימייל" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+        <select id="manualType" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+          <option value="">בחר סוג מקום</option>
+          <option>בר</option>
+          <option>מסעדה</option>
+          <option>בית קפה</option>
+          <option>מלון</option>
+          <option>אולם</option>
+          <option>יקב</option>
+          <option>גלריה</option>
+          <option>אחר</option>
+        </select>
+        <input type="text" id="manualCity" placeholder="עיר" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+		<select id="manualRegion" style="padding:10px;border-radius:10px;border:1px solid #ccc">
+          <option value="">בחר אזור</option>
+          <option>צפון</option>
+          <option>מרכז</option>
+          <option>דרום</option>
+        </select>
+      </div>
+      <br>
+      <textarea id="manualNotes" placeholder="הערות..." style="width: 100%; height: 80px; padding: 10px; border-radius: 10px; border:1px solid #ccc;"></textarea>
+      <br><br>
+      <button onclick="addManualVenue()" class="btn btn-primary">✅ הוסף לרשימה</button>
     </div>
-    <br>
-    <textarea id="manualNotes" placeholder="הערות..." style="width: 100%; height: 80px; padding: 10px; border-radius: 10px; border:1px solid #ccc;"></textarea>
-    <br><br>
-    <button onclick="addManualVenue()" class="btn btn-primary">✅ הוסף לרשימה</button>
   </div>
-</div>
 
     <script>
         let venues = [];
@@ -467,6 +474,26 @@
             phone: '',
             email: ''
         };
+
+function getRegionByCity(city) {
+    const regionMap = {
+        // צפון
+        'נהריה': 'צפון', 'עכו': 'צפון', 'קריית שמונה': 'צפון', 'צפת': 'צפון', 
+        'טבריה': 'צפון', 'נצרת': 'צפון', 'חיפה': 'צפון', 'קריות': 'צפון',
+        'אורטל': 'צפון', 'אלוני אבא': 'צפון', 'אלונים': 'צפון',
+        
+        // מרכז
+        'תל אביב': 'מרכז', 'רמת גן': 'מרכז', 'פתח תקווה': 'מרכז', 
+        'ראש העין': 'מרכז', 'הרצליה': 'מרכז', 'כפר סבא': 'מרכז',
+        'רעננה': 'מרכז', 'ירושלים': 'מרכז',
+        
+        // דרום
+        'באר שבע': 'דרום', 'אשדוד': 'דרום', 'אשקלון': 'דרום', 
+        'אילת': 'דרום', 'קריית גת': 'דרום', 'נתיבות': 'דרום'
+    };
+    
+    return regionMap[city] || '';
+}
 
         // טעינת הגדרות משתמש
         function loadUserSettings() {
@@ -672,7 +699,7 @@ if (viewMode === 'grid') {
         <div>
           <div class="venue-name" style="margin-bottom:5px;">${venue.name}</div>
           <div class="info-row">${venue.contact || ''} • ${venue.phone || ''}</div>
-          <div class="info-row">${venue.type || ''} • ${venue.city || ''}</div>
+          <div class="info-row">${venue.type || ''} • ${venue.city || ''} • ${venue.region || ''}</div>
         </div>
         <div>
         </div>
@@ -825,14 +852,14 @@ ${userSettings.phone}`
             const cityFilter = document.getElementById('cityFilter').value;
             const typeFilter = document.getElementById('typeFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
-            const regionFilter = document.getElementById('regionFilter').value;
+            const manualRegion = document.getElementById('manualRegion').value;
 
             filteredVenues = venues.filter(venue => {
                 return (!searchFilter || venue.name.toLowerCase().includes(searchFilter)) &&
                        (!cityFilter || venue.city === cityFilter) &&
                        (!typeFilter || venue.type === typeFilter) &&
                        (!statusFilter || venue.status === statusFilter) &&
-                       (!regionFilter || venue.region === regionFilter);
+                       (!manualRegion || venue.region === manualRegion);
             });
 
             renderVenues();
@@ -927,7 +954,7 @@ let currentConversationVenueId = null;
         document.getElementById('cityFilter').addEventListener('change', applyFilters);
         document.getElementById('typeFilter').addEventListener('change', applyFilters);
         document.getElementById('statusFilter').addEventListener('change', applyFilters);
-        document.getElementById('regionFilter').addEventListener('change', applyFilters);
+        document.getElementById('manualRegion').addEventListener('change', applyFilters);
 
         // אתחול המערכת
         window.onload = function() {
@@ -964,7 +991,7 @@ function addManualVenue() {
     type: document.getElementById('manualType').value,
     city: document.getElementById('manualCity').value.trim(),
     notes: document.getElementById('manualNotes').value.trim(),
-    region: getRegionByCity(document.getElementById('manualCity').value.trim()),
+    region: document.getElementById('manualRegion').value.trim(),
     status: 'pending',
     lastContact: null,
     nextFollowUp: null
