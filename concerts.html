@@ -630,13 +630,14 @@ function parseCSV(csvContent) {
         const venue = {
             id: i,
             name: values[0] || '',
-            contact: values[1] || '',
-            phone: values[2] || '',
-            email: values[3] || '',
-            type: values[4] || '',
-            city: values[5] || '',
-            notes: values[6] || '',
-            region: values[7] || '',
+			type: values[1] || '',
+			city: values[2] || '',
+			region: values[3] || '',
+            contact: values[4] || '',
+            phone: values[5] || '',
+            email: values[6] || '', 
+            notes: values[7] || '',
+            
             status: 'pending',
             lastContact: null,
             nextFollowUp: null
