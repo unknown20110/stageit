@@ -612,37 +612,44 @@ function getRegionByCity(city) {
             }
         }
 
-        function parseCSV(csvContent) {
-            const lines = csvContent.split('\n');
-            const headers = lines[0].split(',');
-            venues = [];
+function parseCSV(csvContent) {
+    const lines = csvContent.trim().split('\n');
+    const headers = lines[0].split(',');
+    venues = [];
 
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i].trim()) {
-                    const values = lines[i].split(',');
-                    const venue = {
-                        id: i,
-                        name: values[0] || '',
-                        contact: values[1] || '',
-                        phone: values[2] || '',
-                        email: values[3] || '',
-                        type: values[4] || '',
-                        city: values[5] || '',
-                        notes: values[6] || '',
-                        region: values[7] || '',
-                        status: 'pending',
-                        lastContact: null,
-                        nextFollowUp: null
-                    };
-                    venues.push(venue);
-                }
-            }
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
 
-            filteredVenues = [...venues];
-            updateFilters();
-            renderVenues();
-            updateStats();
+        const values = line.split(',');
+        if (values.length < 8) {
+            console.warn(`שורה ${i + 1} חסרה עמודות:`, line);
+            continue;
         }
+
+        const venue = {
+            id: i,
+            name: values[0] || '',
+            contact: values[1] || '',
+            phone: values[2] || '',
+            email: values[3] || '',
+            type: values[4] || '',
+            city: values[5] || '',
+            notes: values[6] || '',
+            region: values[7] || '',
+            status: 'pending',
+            lastContact: null,
+            nextFollowUp: null
+        };
+
+        venues.push(venue);
+    }
+
+    filteredVenues = [...venues];
+    updateFilters();
+    renderVenues();
+    updateStats();
+}
 
 function renderVenues() {
   const container = document.getElementById('venuesContainer');
