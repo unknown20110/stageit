@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת ניהול הופעות מתקדמת</title>
+    <title>סטייג'יט - מערכת ניהול הופעות</title>
     <style>
  	      .chat-icon {
           position: absolute;
@@ -39,14 +39,29 @@
             backdrop-filter: blur(10px);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(90deg, #ff6b6b, #f06595, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.header h1 {
+    font-size: 3rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.header h2 {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    font-weight: 500;
+}
 
         .stats-dashboard {
             display: grid;
@@ -325,19 +340,24 @@
     </div>
 
     <div class="container">
-        <h1 class="header">🎵 מערכת ניהול הופעות מתקדמת 🎵</h1>
-        
+        <h1 class="header">🎵 סטייג'יט - מערכת ניהול הופעות 🎵</h1>
+        <h2 class="header">לסגור הופעה זה קל!</h2>
         <div class="upload-section">
             <h3>📊 העלאת נתונים</h3>
-            <p>העלה את קובץ ה-CSV או העתק והדבק את הנתונים מהגוגל שיטס</p>
+            <p>העלו את קובץ ה-CSV עם רשימת המקומות שלכם ע"י בחירת קובץ, ולחצו טען נתונים.</p>
+            <p>להורדת תבנית CSV לחצו על הורדת תבנית, מלאו את פרטי המקומות והעלו אותם למערכת סטייג'יט.</p>
             <input type="file" id="csvFile" accept=".csv" class="file-input">
+			<br><br>
+			<button onclick="loadData()" class="btn btn-primary">📈 טען נתונים</button>
+			<button onclick="saveData()" class="btn btn-secondary">💾 שמור נתונים</button>
+            <button onclick="loadSavedData()" class="btn btn-secondary">📂 טען נתונים שמורים</button>
+            <button onclick="exportData()" class="btn btn-secondary">📤 ייצא CSV</button>
+			<button onclick="downloadTemplate()" class="btn btn-secondary">⬇️ הורדת תבנית</button>
             <div style="margin: 10px 0;">או</div>
             <button onclick="openAddVenueModal()" class="btn btn-secondary">➕ הוסף מקום ידנית</button>
             <br><br>
-            <button onclick="loadData()" class="btn btn-primary">📈 טען נתונים</button>
-            <button onclick="saveData()" class="btn btn-secondary">💾 שמור נתונים</button>
-            <button onclick="loadSavedData()" class="btn btn-secondary">📂 טען נתונים שמורים</button>
-            <button onclick="exportData()" class="btn btn-secondary">📤 ייצא CSV</button>
+            
+
         </div>
 
         <!-- הגדרות אישיות -->
@@ -1080,6 +1100,23 @@ function addManualVenue() {
   renderVenues();
   updateStats();
   closeAddVenueModal();
+}
+
+function downloadTemplate() {
+    const csvContent = 
+`שם המקום,סוג מקום,עיר,אזור,איש קשר,טלפון,אימייל,פרטים על המקום
+הפאב של נתנאל,בר,פרוד,צפון,נתנאל,052-4541565,netanelkuperman@yahoo.com,פאב מעולה הממוקם במקום פסטורלי בצפון.`;
+
+    // הוספת BOM (Byte Order Mark)
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "template.csv";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
         // סגירת מודלים בלחיצה מחוץ לתוכן
