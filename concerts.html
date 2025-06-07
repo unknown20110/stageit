@@ -39,29 +39,14 @@
             backdrop-filter: blur(10px);
         }
 
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(90deg, #ff6b6b, #f06595, #4ecdc4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.header h1 {
-    font-size: 3rem;
-    margin: 0;
-    line-height: 1.2;
-}
-
-.header h2 {
-    font-size: 1.5rem;
-    margin-top: 10px;
-    font-weight: 500;
-}
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
         .stats-dashboard {
             display: grid;
@@ -331,11 +316,11 @@
       <div class="modal-content">
         <span class="close" onclick="closeConversationModal()">&times;</span>
         <h2>🗣️ פרטים נוספים ותיעוד שיחה</h2>
-		<div id="venueNotes" style="margin-bottom: 15px; font-size: 0.95em; background: #e8f0fe; padding: 10px; border-radius: 10px; border-right: 4px solid #4ecdc4;"></div>
+		<div id="venueModalNotes" style="margin-bottom: 15px; font-size: 0.95em; background: #e8f0fe; padding: 10px; border-radius: 10px; border-right: 4px solid #4ecdc4;"></div>
         <div id="conversationHistory" style="max-height: 200px; overflow-y: auto; background: #f1f1f1; padding: 10px; border-radius: 10px; margin-bottom: 15px;"></div>
         <textarea id="conversationText" placeholder="כתוב כאן את פרטי השיחה..." style="width: 100%; height: 100px; padding: 10px; border-radius: 10px; border: 1px solid #ccc;"></textarea>
         <br><br>
-        <button class="btn btn-primary" onclick="saveConversation()">💾 שמור תיעוד</button>
+        <button class="btn btn-primary" onclick="saveVenueConversation()">💾 שמור תיעוד</button>
       </div>
     </div>
 
@@ -344,8 +329,20 @@
         <h2 class="header">לסגור הופעה זה קל!</h2>
         <div class="upload-section">
             <h3>📊 העלאת נתונים</h3>
-            <p>העלו את קובץ ה-CSV עם רשימת המקומות שלכם ע"י בחירת קובץ, ולחצו טען נתונים.</p>
-            <p>להורדת תבנית CSV לחצו על הורדת תבנית, מלאו את פרטי המקומות והעלו אותם למערכת סטייג'יט.</p>
+<ul>
+  <li>הורידו את <strong>תבנית ה-CSV</strong> על ידי לחיצה על כפתור <strong>⬇️ הורדת תבנית</strong>.</li>
+  <li>פתחו את הקובץ ב-Excel ומלאו את <strong>פרטי המקומות</strong> בטורים המתאימים.</li>
+  <li>לאחר סיום העריכה, שמרו את הקובץ כך:
+    <ul>
+      <li>בחרו <code>קובץ &gt; שמור בשם</code></li>
+      <li>בחרו את <strong>יעד השמירה</strong> במחשב</li>
+      <li>בחרו ב־<strong>שמור כסוג</strong>: <code>CSV UTF-8 (Comma delimited) (*.csv)</code></li>
+      <li>שמרו בשם <code>template.csv</code> (או שם אחר לבחירתכם)</li>
+      <li>אם נשאלתם – אשרו <strong>החלפה של קובץ קיים</strong></li>
+    </ul>
+  </li>
+  <li>חזרו למערכת, לחצו על <strong>📁 בחירת קובץ</strong>, ולאחר מכן על <strong>📈 טען נתונים</strong> להעלאת הקובץ למערכת.</li>
+</ul>
             <input type="file" id="csvFile" accept=".csv" class="file-input">
 			<br><br>
 			<button onclick="loadData()" class="btn btn-primary">📈 טען נתונים</button>
@@ -453,6 +450,34 @@
             <div id="messageContent"></div>
         </div>
     </div>
+	
+	<!-- Modal כרטיס מקום מלא -->
+<div id="venueModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeVenueModal()">&times;</span>
+    <h2 id="venueModalTitle">🏠 פרטי מקום מלא</h2>
+    <br>
+    <hr>
+    <br>    
+    <h4>📋 פרטי המקום</h4>
+    <div id="venueModalInfo" style="margin-bottom:15px;"></div>
+
+    <!-- תיעוד שיחה -->
+    <h3>🗣️ תיעוד שיחה</h3>
+    <div id="venueModalHistory" style="max-height: 200px; overflow-y: auto; background: #f1f1f1; padding: 10px; border-radius: 10px; margin-bottom: 15px;"></div>
+    <textarea id="venueModalText" placeholder="כתוב כאן את פרטי השיחה..." style="width: 100%; height: 100px; padding: 10px; border-radius: 10px; border: 1px solid #ccc;"></textarea>
+    <br><br>
+    <button class="btn btn-primary" onclick="saveVenueConversation()">💾 שמור תיעוד</button>
+
+    <!-- פעולות -->
+    <h3 style="margin-top: 20px;">⚙️ פעולות</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+      <select id="venueModalStatusSelect" class="status-select"></select>
+      <button class="btn btn-primary" id="generateMessageBtn">✉️ צור הודעה</button>
+      <button class="btn btn-secondary" id="callVenueBtn" style="display:none;">📞 התקשר</button>
+    </div>
+  </div>
+</div>
 
   <!-- הוספת מקום ידנית כולל אזור -->
   <div id="addVenueModal" class="modal">
@@ -762,20 +787,13 @@ if (viewMode === 'grid') {
       ${venue.type ? `<div class="info-row">🏢 ${venue.type}</div>` : ''}
       ${venue.city ? `<div class="info-row">📍 ${venue.city}</div>` : ''}
       ${venue.region ? `<div class="info-row">🗺️ ${venue.region}</div>` : ''}
-      
-    </div>
-    <div class="actions">
-      <select class="status-select" onchange="updateStatus(${venue.id}, this.value)">
-        <option value="pending" ${venue.status === 'pending' ? 'selected' : ''}>ממתין לפנייה</option>
-        <option value="contacted" ${venue.status === 'contacted' ? 'selected' : ''}>נוצר קשר</option>
-        <option value="confirmed" ${venue.status === 'confirmed' ? 'selected' : ''}>בתהליך</option>
-        <option value="closed" ${venue.status === 'closed' ? 'selected' : ''}>נסגר</option>
-      </select>
-      <button class="btn btn-primary" onclick="generateMessage(${venue.id})">✉️ צור הודעה</button>
-      ${venue.phone ? `<button class="btn btn-secondary" onclick="callVenue('${venue.phone}')">📞 התקשר</button>` : ''}
-      <button class="btn btn-secondary" onclick="openConversation(${venue.id})">🗣️ פרטים נוספים ותיעוד שיחה</button>
     </div>
   `;
+
+  // כאן עושים את הכרטיס קליקבילי:
+  venueCard.onclick = function() {
+    openVenueCard(venue.id);
+  };
 }
 
 	else {
@@ -990,30 +1008,104 @@ ${userSettings.phone}`
         }
 
 function openConversation(venueId) {
-    currentConversationVenueId = venueId;
-    const historyDiv = document.getElementById('conversationHistory');
-    const data = JSON.parse(localStorage.getItem('venueChats') || '{}');
-    const history = data[venueId] || [];
-	const venue = venues.find(v => v.id === venueId);
-    document.getElementById('venueNotes').innerHTML = venue?.notes
-      ? `<strong>📌 הערות:</strong> ${venue.notes}`
-      : '<strong>📌 הערות:</strong> אין הערות למקום זה.';
+  currentConversationVenueId = venueId;
+  const historyDiv = document.getElementById('conversationHistory');
+  const data = JSON.parse(localStorage.getItem('venueChats') || '{}');
+  const history = data[venueId] || [];
+  const venue = venues.find(v => v.id === venueId);
+  document.getElementById('venueNotes').innerHTML = venue?.notes
+    ? `<strong>📌 הערות:</strong> ${venue.notes}`
+    : '<strong>📌 הערות:</strong> אין הערות למקום זה.';
+  
+  historyDiv.innerHTML = history.map(chat => `
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 0.85em; color: gray;">📅 ${chat.time}</div>
+        <div>${chat.text}</div>
+      </div>
+  `).join('') || '<div>אין תיעוד קודם</div>';
 
-    
-    historyDiv.innerHTML = history.map(chat => `
-        <div style="margin-bottom: 8px;">
-          <div style="font-size: 0.85em; color: gray;">📅 ${chat.time}</div>
-          <div>${chat.text}</div>
-        </div>
-    `).join('') || '<div>אין תיעוד קודם</div>';
-    
-    document.getElementById('conversationText').value = '';
-    document.getElementById('conversationModal').style.display = 'block';
+  document.getElementById('conversationText').value = '';
+  document.getElementById('conversationModal').style.display = 'block';
 }
+
+// ---- עכשיו מחוץ לפונקציה ----
+
+
+
+function openVenueCard(venueId) {
+  currentConversationVenueId = venueId;
+  const venue = venues.find(v => v.id === venueId);
+  if (!venue) return;
+
+  // Title
+  document.getElementById('venueModalTitle').innerText = `🏠 ${venue.name}`;
+
+  // Venue info
+  document.getElementById('venueModalInfo').innerHTML = `
+    <div class="info-row">👤 איש קשר: ${venue.contact || '-'}</div>
+    <div class="info-row">📞 טלפון: ${venue.phone || '-'}</div>
+    <div class="info-row">📧 אימייל: ${venue.email || '-'}</div>
+    <div class="info-row">🏢 סוג: ${venue.type || '-'}</div>
+    <div class="info-row">📍 עיר: ${venue.city || '-'}</div>
+    <div class="info-row">🗺️ אזור: ${venue.region || '-'}</div>
+    <div class="info-row">📌 הערות: ${venue.notes || '-'}</div>
+  `;
+
+  // Notes
+  document.getElementById('venueModalNotes').innerHTML = venue?.notes
+    ? `<strong>📌 הערות:</strong> ${venue.notes}`
+    : '<strong>📌 הערות:</strong> אין הערות למקום זה.';
+
+  // Conversation history
+  const historyDiv = document.getElementById('venueModalHistory');
+  const data = JSON.parse(localStorage.getItem('venueChats') || '{}');
+  const history = data[venueId] || [];
+  historyDiv.innerHTML = history.map(chat => `
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 0.85em; color: gray;">📅 ${chat.time}</div>
+        <div>${chat.text}</div>
+      </div>
+  `).join('') || '<div>אין תיעוד קודם</div>';
+
+  document.getElementById('venueModalText').value = '';
+
+  // Status select
+  document.getElementById('venueModalStatusSelect').innerHTML = `
+    <option value="pending" ${venue.status === 'pending' ? 'selected' : ''}>ממתין לפנייה</option>
+    <option value="contacted" ${venue.status === 'contacted' ? 'selected' : ''}>נוצר קשר</option>
+    <option value="confirmed" ${venue.status === 'confirmed' ? 'selected' : ''}>בתהליך</option>
+    <option value="closed" ${venue.status === 'closed' ? 'selected' : ''}>נסגר</option>
+  `;
+  document.getElementById('venueModalStatusSelect').onchange = function() {
+    updateStatus(venueId, this.value);
+  };
+
+  // Generate message button
+  document.getElementById('generateMessageBtn').onclick = function() {
+    document.getElementById('venueModal').style.display = 'none';
+    generateMessage(venueId);
+  };
+
+  // Call button
+  if (venue.phone) {
+    document.getElementById('callVenueBtn').style.display = '';
+    document.getElementById('callVenueBtn').onclick = function() {
+      callVenue(venue.phone);
+    };
+  } else {
+    document.getElementById('callVenueBtn').style.display = 'none';
+  }
+
+  // Open modal
+  document.getElementById('venueModal').style.display = 'block';
+}
+
+
 
 function closeConversationModal() {
     document.getElementById('conversationModal').style.display = 'none';
 }
+
 
 function saveConversation() {
     const text = document.getElementById('conversationText').value.trim();
@@ -1031,9 +1123,29 @@ function saveConversation() {
     });
 
     localStorage.setItem('venueChats', JSON.stringify(data));
-    closeConversationModal();
+
+    // עדכון היסטוריית שיחה בתוך ה-Modal
+    const historyDiv = document.getElementById('conversationHistory');
+    const history = data[currentConversationVenueId];
+    historyDiv.innerHTML = history.map(chat => `
+        <div style="margin-bottom: 8px;">
+            <div style="font-size: 0.85em; color: gray;">📅 ${chat.time}</div>
+            <div>${chat.text}</div>
+        </div>
+    `).join('');
+
+    document.getElementById('conversationText').value = '';
+
     renderVenues();
+
+    // סגור את המודל רק אם צריך:
+    if (document.getElementById('conversationModal').style.display === 'block') {
+        closeConversationModal();
+    } else if (document.getElementById('venueModal').style.display === 'block') {
+        closeVenueModal();
+    }
 }
+
 
 // סימן של תיעוד שיחה
 function getConversationIcon(venueId) {
@@ -1135,6 +1247,63 @@ function downloadTemplate() {
                 closeConversationModal();
             }
         };
-    </script>
+    
+
+function closeVenueModal() {
+    document.getElementById('venueModal').style.display = 'none';
+}
+
+function saveVenueConversation() {
+    let text = '';
+    let textArea = null;
+    let historyDiv = null;
+    const data = JSON.parse(localStorage.getItem('venueChats') || '{}');
+
+    // נזהה באיזה מודל נמצאים
+    const isConversationModal = document.getElementById('conversationModal').style.display === 'block';
+    const isVenueModal = document.getElementById('venueModal').style.display === 'block';
+
+    if (isConversationModal) {
+        textArea = document.getElementById('conversationText');
+        historyDiv = document.getElementById('conversationHistory');
+    } else if (isVenueModal) {
+        textArea = document.getElementById('venueModalText');
+        historyDiv = document.getElementById('venueModalHistory');
+    }
+
+    if (!textArea) return;
+    text = textArea.value.trim();
+
+    if (!text) {
+        alert('לא ניתן לשמור שיחה ריקה');
+        return;
+    }
+
+    if (!data[currentConversationVenueId]) {
+        data[currentConversationVenueId] = [];
+    }
+
+    data[currentConversationVenueId].push({
+        text,
+        time: new Date().toLocaleString('he-IL')
+    });
+
+    localStorage.setItem('venueChats', JSON.stringify(data));
+
+    const history = data[currentConversationVenueId];
+    historyDiv.innerHTML = history.map(chat => `
+        <div style="margin-bottom: 8px;">
+            <div style="font-size: 0.85em; color: gray;">📅 ${chat.time}</div>
+            <div>${chat.text}</div>
+        </div>
+    `).join('');
+
+    textArea.value = '';
+    renderVenues();
+
+
+}
+
+</script>
 </body>
 </html>
